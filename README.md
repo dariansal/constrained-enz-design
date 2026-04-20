@@ -6,12 +6,12 @@ Enzyme catalysis depends on the precise three-dimensional positioning of a small
 
 Tighter motif conditioning during RFdiffusion backbone generation will produce designs with lower catalytic RMSD relative to the reference geometry, higher local AlphaFold2 confidence (pLDDT) at active-site residues, and reduced structural variance across multiple AlphaFold2 predictions. I test this across two enzyme systems representing fundamentally different catalytic architectures — a Ser-His-Asp hydrogen-bond relay (1PPF) and a Zn²⁺-coordinated metal triad (1CA2) — to evaluate whether controllability generalizes across enzyme classes.
 
-![Summary Panel](results/analysis/figures/fig5_summary_panel.png)
-*8Å shell conditioning reduces catalytic RMSD by 50% and structural variance by 63% for the Zn²⁺-coordinated active site (1CA2), while the Ser-His-Asp catalytic triad (1PPF) worsens monotonically with tighter conditioning — revealing an enzyme-class-dependent response to motif conditioning.*
-
 ---
 
 ## Results Summary
+
+![Summary Panel](results/analysis/figures/fig5_summary_panel.png)
+*8Å shell conditioning reduces catalytic RMSD by 50% and structural variance by 63% for the Zn²⁺-coordinated active site (1CA2), while the Ser-His-Asp catalytic triad (1PPF) worsens monotonically with tighter conditioning — revealing an enzyme-class-dependent response to motif conditioning.*
 
 | Enzyme | Regime | Mean Cat. RMSD (Å) | SD |
 |--------|--------|--------------------|----|
