@@ -43,7 +43,7 @@ Tighter motif conditioning during RFdiffusion backbone generation will produce d
 
 6 experiments total (2 enzymes × 3 regimes), 20 RFdiffusion backbones each.
 
-A full write-up of the experimental design, results, and discussion is available in [`results/report.md`](results/report.md) (Markdown) and [`results/report.tex`](results/report.tex) (LaTeX/PDF).
+A full write-up of the experimental design, results, and discussion is available in [`results/report.pdf`](results/report.pdf).
 
 ---
 
