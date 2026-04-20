@@ -1,0 +1,33 @@
+# Large tool directories (clone separately per README)
+tools/
+
+# Model weights (download separately per README)
+weights/
+
+# Conda environments
+conda_environments/
+
+# All pipeline outputs (large, reproducible)
+outputs/
+results/colabfold/
+results/rfdiffusion/
+results/proteinmpnn/
+
+# Claude Code internals
+.claude/
+
+# Intermediate files
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.DS_Store
+
+# SLURM logs
+slurm/logs/
+*.out
+*.err
+
+# Temporary files
+*.tmp
+*.bak

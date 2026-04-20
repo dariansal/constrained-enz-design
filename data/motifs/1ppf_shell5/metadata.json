@@ -1,0 +1,70 @@
+{
+  "experiment_name": "1ppf_shell5",
+  "enzyme_id": "1ppf",
+  "regime": "shell5",
+  "chain": "E",
+  "pdb_file": "/hpc/group/naderilab/darian/Enz/data/pdb/1ppf_chainE.pdb",
+  "motif_pdb": "/hpc/group/naderilab/darian/Enz/data/motifs/1ppf_shell5/motif.pdb",
+  "catalytic_resnums": [
+    57,
+    102,
+    195
+  ],
+  "catalytic_resnames": [
+    "HIS",
+    "ASP",
+    "SER"
+  ],
+  "fixed_resnums": [
+    42,
+    43,
+    44,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    94,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    191,
+    193,
+    194,
+    195,
+    196,
+    197,
+    212,
+    213,
+    214,
+    229
+  ],
+  "n_fixed_residues": 27,
+  "contig": "[13/E42-44/13/E54-60/13/E94-94/13/E99-104/13/E191-191/13/E193-197/13/E212-214/13/E229-229/13]",
+  "target_length": 150,
+  "n_designs": 20,
+  "n_seq_per_design": 5,
+  "cutoff_angstroms": 5.0,
+  "reference_ca_positions": {
+    "E57_HIS_CA": [
+      20.297,
+      60.276,
+      9.491
+    ],
+    "E102_ASP_CA": [
+      18.612,
+      55.391,
+      5.473
+    ],
+    "E195_SER_CA": [
+      28.034,
+      59.025,
+      6.277
+    ]
+  }
+}

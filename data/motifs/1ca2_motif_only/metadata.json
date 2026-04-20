@@ -1,0 +1,46 @@
+{
+  "experiment_name": "1ca2_motif_only",
+  "enzyme_id": "1ca2",
+  "regime": "motif_only",
+  "chain": "A",
+  "pdb_file": "/hpc/group/naderilab/darian/Enz/data/pdb/1ca2_chainA.pdb",
+  "motif_pdb": "/hpc/group/naderilab/darian/Enz/data/motifs/1ca2_motif_only/motif.pdb",
+  "catalytic_resnums": [
+    94,
+    96,
+    119
+  ],
+  "catalytic_resnames": [
+    "HIS",
+    "HIS",
+    "HIS"
+  ],
+  "fixed_resnums": [
+    94,
+    96,
+    119
+  ],
+  "n_fixed_residues": 3,
+  "contig": "[36/A94-94/36/A96-96/36/A119-119/39]",
+  "target_length": 150,
+  "n_designs": 20,
+  "n_seq_per_design": 5,
+  "cutoff_angstroms": null,
+  "reference_ca_positions": {
+    "A94_HIS_CA": [
+      -10.286,
+      -1.397,
+      10.39
+    ],
+    "A96_HIS_CA": [
+      -6.846,
+      -7.256,
+      12.722
+    ],
+    "A119_HIS_CA": [
+      -11.835,
+      -1.368,
+      15.75
+    ]
+  }
+}
