@@ -24,14 +24,14 @@
 
 % ============================================================
 \begin{abstract}
-Enzymes achieve catalytic efficiency through the precise three-dimensional arrangement of a small number of active-site residues — even sub-angstrom deviations can reduce activity by orders of magnitude. Diffusion-based protein design methods such as RFdiffusion~\cite{watson2023} enable the generation of novel protein backbones conditioned on fixed structural motifs, but it remains unclear how tightly the active-site motif should be constrained during diffusion. We systematically evaluated three conditioning regimes — motif-only, 5~\AA{} shell, and 8~\AA{} shell — across two mechanistically distinct enzymes: Human Leukocyte Elastase (1PPF, Ser-His-Asp catalytic triad) and Human Carbonic Anhydrase II (1CA2, His-Zn coordination triad). For each regime, 20 backbone designs were generated with RFdiffusion, sequences were designed with ProteinMPNN~\cite{dauparas2022}, and structures were validated with ColabFold (AlphaFold2)~\cite{mirdita2022,jumper2021}. Tighter shell conditioning substantially improved catalytic geometry retention for carbonic anhydrase (catalytic RMSD: 11.4~\AA{} $\to$ 2.6~\AA{}, 77\% reduction; structural variance: 13.2~\AA{} $\to$ 1.3~\AA{}, 90\% reduction), while yielding only marginal improvement for elastase (9.6~\AA{} $\to$ 9.1~\AA{}). This enzyme-class-dependent response suggests that metal-coordinated active sites are more amenable to shell-constrained scaffolding than hydrogen-bond catalytic triads, and that conditioning radius should be tuned to the mechanical reach of each active-site type. Source code and data are available at \url{https://github.com/dariansal/diffusion-enzyme-design}.
+Enzymes achieve catalytic efficiency through the precise three-dimensional arrangement of a small number of active-site residues — even sub-angstrom deviations can reduce activity by orders of magnitude. Diffusion-based protein design methods such as RFdiffusion~\cite{watson2023} enable the generation of novel protein backbones conditioned on fixed structural motifs, but it remains unclear how tightly the active-site motif should be constrained during diffusion. We systematically evaluated three conditioning regimes — motif-only, 5~\AA{} shell, and 8~\AA{} shell — across two mechanistically distinct enzymes: Human Leukocyte Elastase (1PPF, Ser-His-Asp catalytic triad) and Human Carbonic Anhydrase II (1CA2, His-Zn coordination triad). For each regime, 20 backbone designs were generated with RFdiffusion, sequences were designed with ProteinMPNN~\cite{dauparas2022}, and structures were validated with ColabFold (AlphaFold2)~\cite{mirdita2022,jumper2021}. Tighter shell conditioning substantially improved catalytic geometry for carbonic anhydrase (catalytic RMSD: 5.4~\AA{} $\to$ 2.7~\AA{}, 50\% reduction; structural variance: 3.2~\AA{} $\to$ 1.2~\AA{}, 63\% reduction), while producing a monotonically \emph{worse} result for elastase (4.6~\AA{} $\to$ 7.0~\AA{} $\to$ 9.2~\AA{}). AlphaFold2 confidence (pLDDT) decreases sharply with tighter conditioning for both enzymes, from $\sim$62--65 (motif-only) to $\sim$31--34 (shell8). This enzyme-class-dependent response suggests that metal-coordinated active sites benefit from shell-constrained scaffolding, while hydrogen-bond catalytic triads are best served by minimal conditioning that preserves scaffold freedom. Source code and data are available at \url{https://github.com/dariansal/diffusion-enzyme-design}.
 \end{abstract}
 
 % ============================================================
 
 \section*{Significance Statement}
 \begin{mdframed}
-Designing proteins with functional active sites is a central challenge in synthetic biology and drug discovery. Recent AI tools like RFdiffusion can generate novel protein backbones around a fixed active-site motif, but a key question is how much structural context around the active site to fix: too little and the model lacks the constraints to preserve the geometry; too much and the design space becomes too restricted. We show that the answer depends on the type of active site. For a zinc-coordinated active site — where a metal ion acts as a rigid anchor — fixing an 8~\AA{} shell around the catalytic residues reduces geometric error by 77\% and prediction variability by 90\%. For a hydrogen-bond relay triad, the same conditioning has almost no effect on geometric accuracy, because the constraints that hold the triad together extend far beyond 8~\AA{}. This result has a direct practical implication: the conditioning radius in diffusion-based enzyme design is not a universal hyperparameter but an enzyme-class-specific choice.
+Designing proteins with functional active sites is a central challenge in synthetic biology and drug discovery. Recent AI tools like RFdiffusion can generate novel protein backbones around a fixed active-site motif, but a key question is how much structural context around the active site to fix: too little and the model lacks the constraints to preserve the geometry; too much and the design space becomes too restricted. We show that the answer depends on the type of active site. For a zinc-coordinated active site — where a metal ion acts as a rigid anchor — fixing an 8~\AA{} shell reduces geometric error by 50\% and prediction variability by 63\%. For a hydrogen-bond relay triad, the same conditioning monotonically \emph{worsens} geometric accuracy, because the free scaffold space of minimal conditioning allows RFdiffusion to find better solutions. This result has a direct practical implication: the conditioning radius in diffusion-based enzyme design is not a universal hyperparameter but an enzyme-class-specific choice.
 \end{mdframed}
 
 % ============================================================
@@ -116,23 +116,23 @@ where $\hat{p}_i$ are centered predicted coordinates and $r_i$ are centered refe
 
 \subsection{Catalytic Geometry Retention}
 
-Table~\ref{tab:results} summarizes mean catalytic RMSD and pLDDT across all six experiments. The dominant finding is a strong, monotonic improvement in catalytic geometry for carbonic anhydrase as conditioning tightens, and a much weaker, non-monotonic effect for elastase (Figure~\ref{fig:rmsd}).
+Table~\ref{tab:results} summarizes mean catalytic RMSD and pLDDT across all six experiments. For carbonic anhydrase, conditioning monotonically improves catalytic geometry; for elastase, conditioning monotonically worsens it — revealing a strikingly enzyme-class-dependent response (Figure~\ref{fig:rmsd}).
 
 \begin{table}[h]
 \centering
-\caption{Summary of structural metrics per experiment. Catalytic RMSD is computed after Kabsch alignment of predicted catalytic triad C$\alpha$ atoms onto the reference crystal structure. Global pLDDT is averaged across the full designed sequence. Lower RMSD and higher pLDDT indicate better designs. Bold indicates best value per enzyme per metric.}
+\caption{Summary of structural metrics per experiment. Catalytic RMSD is computed after Kabsch alignment of predicted catalytic triad C$\alpha$ atoms onto the reference crystal structure. Mean pLDDT is averaged globally across the full designed sequence. Lower RMSD and higher pLDDT indicate better designs. Bold indicates best value per enzyme per metric. $^\dagger$Fewer predictions due to early stopping when pLDDT $\geq$ 70 (see Section~\ref{sec:limitations}).}
 \label{tab:results}
 \begin{tabular}{llrrrr}
 \toprule
 Enzyme & Regime & Mean Cat.\ RMSD (\AA{}) & SD & Mean pLDDT & $N$ \\
 \midrule
-1PPF (Elastase) & motif\_only        & 9.57  & 12.22 & \textbf{38.1} & 132 \\
-                & shell5             & 10.39 & 9.24  & 36.3          & 200 \\
-                & \textbf{shell8}    & \textbf{9.14} & \textbf{2.15} & 33.9 & 200 \\
+\textbf{1PPF (Elastase)} & \textbf{motif\_only} & \textbf{4.62} & 4.66 & \textbf{65.5} & 165$^\dagger$ \\
+                & shell5             & 7.00  & 2.54 & 40.7          & 500 \\
+                & shell8             & 9.22  & \textbf{2.56} & 30.7 & 500 \\
 \midrule
-1CA2 (CA-II)   & motif\_only        & 11.39 & 13.60 & \textbf{40.1} & 151 \\
-               & shell5             & 4.03  & 2.53  & 39.6          & 200 \\
-               & \textbf{shell8}    & \textbf{2.61} & \textbf{1.55} & 36.4 & 200 \\
+1CA2 (CA-II)   & motif\_only        & 5.42  & 4.27 & \textbf{58.5} & 254$^\dagger$ \\
+               & shell5             & 3.07  & 2.32 & 41.0          & 500 \\
+               & \textbf{shell8}    & \textbf{2.70} & \textbf{1.69} & 34.0 & 500 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -140,11 +140,11 @@ Enzyme & Regime & Mean Cat.\ RMSD (\AA{}) & SD & Mean pLDDT & $N$ \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{analysis/figures/fig1_catalytic_rmsd.pdf}
-\caption{\textbf{Distribution of catalytic C$\alpha$ RMSD per experiment}, computed after Kabsch alignment of the predicted catalytic triad onto the reference crystal structure. Diamond markers ($\Diamond$) indicate group means. For 1CA2 (right), RMSD decreases monotonically from 11.4~\AA{} (motif\_only) to 4.0~\AA{} (shell5) to 2.6~\AA{} (shell8), with the distribution narrowing dramatically — shell8 SD drops from 13.6~\AA{} to 1.5~\AA{}. For 1PPF (left), no monotonic improvement is observed: shell5 is marginally \emph{worse} than motif\_only (10.4 vs.\ 9.6~\AA{}), and shell8 achieves only a small improvement (9.1~\AA{}). The bimodal distribution visible in motif\_only experiments reflects a mixture of designs that partially recapitulate the triad geometry and those that do not.}
+\caption{\textbf{Distribution of catalytic C$\alpha$ RMSD per experiment}, computed after Kabsch alignment of the predicted catalytic triad onto the reference crystal structure. Diamond markers ($\Diamond$) indicate group means. For 1CA2 (right), RMSD decreases monotonically from 5.4~\AA{} (motif\_only) to 3.1~\AA{} (shell5) to 2.7~\AA{} (shell8), with SD narrowing from 4.3~\AA{} to 1.7~\AA{}. For 1PPF (left), RMSD worsens monotonically: 4.6~\AA{} (motif\_only) to 7.0~\AA{} (shell5) to 9.2~\AA{} (shell8) — tighter conditioning drives elastase designs further from the native triad geometry. The broad distributions in motif\_only experiments reflect a mixture of designs that partially recapitulate the triad geometry and those that do not.}
 \label{fig:rmsd}
 \end{figure}
 
-For 1CA2, shell conditioning produces a dramatic, monotonic improvement: mean RMSD drops from 11.4~\AA{} (motif\_only) to 4.0~\AA{} (shell5) and 2.6~\AA{} (shell8). Standard deviation also drops from 13.6~\AA{} to 1.5~\AA{}, indicating that shell8 produces not just lower but far more consistent RMSD values. For 1PPF, the response is flat: shell5 performs marginally worse than motif\_only (10.4 vs.\ 9.6~\AA{}), and shell8 achieves only a 4.5\% improvement. The dominant change for elastase is a large reduction in standard deviation with shell8 (from 12.2 to 2.2~\AA{}) — tighter conditioning makes designs more consistently placed but at a geometry that remains far from the native triad.
+For 1CA2, shell conditioning produces a monotonic improvement: mean RMSD drops from 5.4~\AA{} (motif\_only) to 3.1~\AA{} (shell5) and 2.7~\AA{} (shell8), a 50\% total reduction. Standard deviation also drops from 4.3~\AA{} to 1.7~\AA{}, indicating that shell8 produces not just lower but far more consistent RMSD values. For 1PPF, the response is the opposite: RMSD worsens monotonically from 4.6~\AA{} to 7.0~\AA{} to 9.2~\AA{}. Motif-only elastase designs are geometrically closest to the native triad, and adding contextual constraints only pushes the scaffold further away. SD is relatively consistent across regimes for 1PPF ($\approx$2.5~\AA{} for shell5 and shell8), indicating that the misplacement is systematic rather than random.
 
 \clearpage
 \subsection{AlphaFold2 Confidence at the Active Site}
@@ -154,11 +154,11 @@ Figure~\ref{fig:plddt} shows AlphaFold2 confidence at the catalytic residues for
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{analysis/figures/fig2_local_plddt.pdf}
-\caption{\textbf{AlphaFold2 pLDDT at catalytic residues}, grouped by enzyme and regime. Local pLDDT is averaged over the three catalytic residue positions. Diamond markers ($\Diamond$) indicate group means. For 1CA2, shell5 raises local pLDDT from 38.7 to 45.9 relative to motif\_only — the additional histidine context helps AlphaFold2 confidently place the Zn$^{2+}$-coordinating residues. Shell8 local pLDDT (39.3) returns near motif\_only levels, indicating diminishing confidence returns despite continued RMSD improvement.}
+\caption{\textbf{AlphaFold2 pLDDT at catalytic residues}, grouped by enzyme and regime. Local pLDDT is averaged over the three catalytic residue positions. Diamond markers ($\Diamond$) indicate group means. For both enzymes, local pLDDT decreases monotonically with tighter conditioning: for 1CA2 from 56.2 (motif\_only) to 46.8 (shell5) to 34.0 (shell8); for 1PPF from 61.3 (motif\_only) to 36.6 (shell5) to 30.7 (shell8). The motif\_only regime yields the highest AlphaFold2 confidence at the active site, likely because those sequences fold into naturally occurring-like active-site environments that the model recognizes. Tighter geometric constraints force ProteinMPNN to select lower-probability sequences, reducing overall AlphaFold2 confidence.}
 \label{fig:plddt}
 \end{figure}
 
-Global pLDDT decreases modestly with tighter conditioning for both enzymes. This likely reflects the fact that more constrained scaffolds present harder sequence design problems for ProteinMPNN — sequences satisfying more geometric constraints simultaneously may be lower-probability sequences that AlphaFold2 predicts with less overall confidence. Local pLDDT at the catalytic site is more informative: for 1CA2, shell5 raises catalytic pLDDT from 38.7 to 45.9, suggesting that fixing the surrounding histidine environment helps AlphaFold2 confidently resolve the coordination geometry. Critically, for 1PPF, local pLDDT remains nearly flat across all regimes (38.2 $\to$ 37.4 $\to$ 36.0), consistent with the lack of RMSD improvement — AlphaFold2 is not becoming more confident about catalytic residue placement as conditioning tightens.
+Both global and local pLDDT decrease monotonically with tighter conditioning for both enzymes. Local pLDDT drops substantially: for 1PPF from 61.3 (motif\_only) to 30.7 (shell8), and for 1CA2 from 56.2 to 34.0. This trend reflects the increasingly constrained sequence design problem — ProteinMPNN must simultaneously satisfy more geometric constraints, yielding lower-probability sequences that AlphaFold2 predicts with less confidence. Notably, motif\_only experiments yield the highest local pLDDT (61.3 and 56.2 for 1PPF and 1CA2, respectively), because those sequences have greater scaffold freedom and likely fold into environments more familiar to AlphaFold2. The high pLDDT for 1PPF motif\_only coincides with its lowest RMSD (4.6~\AA{}), making motif-only elastase designs the most locally confident and geometrically accurate — though still far from native geometry.
 
 \clearpage
 \subsection{Structural Variance Across the AlphaFold2 Ensemble}
@@ -168,11 +168,11 @@ Figure~\ref{fig:variance} shows structural variance — the spread among the 5 A
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{analysis/figures/fig3_structural_variance.pdf}
-\caption{\textbf{Structural variance per experiment}, defined as the mean pairwise catalytic RMSD among the 5 AlphaFold2 model predictions for each designed sequence (10 pairwise comparisons per sequence). For 1CA2, variance drops from 13.2~\AA{} (motif\_only) to 1.8~\AA{} (shell5) to 1.3~\AA{} (shell8) — a 90\% total reduction — indicating that all 5 AF2 models converge on nearly the same catalytic geometry for shell8 designs. For 1PPF, shell8 also reduces variance from 12.6~\AA{} to 2.1~\AA{}, but this convergence does not correspond to a correct geometry.}
+\caption{\textbf{Structural variance per experiment}, defined as the mean pairwise catalytic RMSD among the 5 AlphaFold2 model predictions for each designed sequence (10 pairwise comparisons per sequence). For 1CA2, variance drops monotonically from 3.2~\AA{} (motif\_only) to 1.3~\AA{} (shell5) to 1.2~\AA{} (shell8) — a 63\% total reduction — indicating that all 5 AF2 models converge on nearly the same catalytic geometry for shell8 designs. For 1PPF, shell5 reduces variance to 1.8~\AA{} but shell8 slightly increases it again to 2.2~\AA{}, suggesting the enforced geometry is not stable across all 5 models.}
 \label{fig:variance}
 \end{figure}
 
-For motif\_only experiments, variance is very high for both enzymes (13.2~\AA{} for 1CA2, 12.6~\AA{} for 1PPF), indicating that without sufficient geometric context, the 5 AF2 models disagree substantially on where the catalytic residues belong. Shell conditioning eliminates this ambiguity for 1CA2: shell8 reduces variance to 1.3~\AA{}, meaning all 5 models agree within $\sim$1~\AA{} on catalytic geometry. The key finding for 1PPF is the dissociation between low variance and high mean RMSD in the shell8 regime: the models have converged on a placement that is reproducible but geometrically wrong relative to the native triad.
+For motif\_only experiments, variance is elevated for both enzymes (3.2~\AA{} for 1CA2, 3.5~\AA{} for 1PPF), indicating that without sufficient geometric context, the 5 AF2 models disagree on where the catalytic residues belong. Shell conditioning reduces this ambiguity substantially for 1CA2: shell8 brings variance to 1.2~\AA{}, meaning all 5 models agree within $\sim$1~\AA{} on catalytic geometry, and this convergence corresponds to a correct geometry (mean RMSD 2.7~\AA{}). For 1PPF, shell5 also reduces variance (1.8~\AA{}) but shell8 increases it slightly (2.2~\AA{}), and neither shell regime converges on the native geometry — mean RMSD climbs to 7.0 and 9.2~\AA{} respectively.
 
 \clearpage
 \subsection{Identifying the Best Designs: Confidence vs.\ Geometry}
@@ -196,7 +196,7 @@ Figure~\ref{fig:summary} shows all three metrics side by side for both enzymes.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{analysis/figures/fig5_summary_panel.pdf}
-\caption{\textbf{Summary panel} showing mean catalytic RMSD, mean local pLDDT at catalytic residues, and mean structural variance per experiment. Error bars represent one standard deviation. For 1CA2, all three metrics improve with tighter conditioning: RMSD decreases monotonically from 11.4~\AA{} to 2.6~\AA{}, local pLDDT peaks at shell5 (45.9), and structural variance drops monotonically from 13.2~\AA{} to 1.3~\AA{}. For 1PPF, no such trend is observed: RMSD is flat or non-monotonic, local pLDDT decreases slightly, and only structural variance shows a clear decrease. The contrast between the two enzymes is the central finding of this study.}
+\caption{\textbf{Summary panel} showing mean catalytic RMSD, mean local pLDDT at catalytic residues, and mean structural variance per experiment. Error bars represent one standard deviation. For 1CA2, RMSD decreases monotonically from 5.4~\AA{} to 2.7~\AA{} and structural variance drops from 3.2~\AA{} to 1.2~\AA{}, while local pLDDT declines with tighter conditioning. For 1PPF, RMSD worsens monotonically from 4.6~\AA{} to 9.2~\AA{} — motif\_only yields the best geometry — while pLDDT and variance broadly follow the same trend as 1CA2. The divergent RMSD response between the two enzymes is the central finding of this study.}
 \label{fig:summary}
 \end{figure}
 
@@ -205,7 +205,7 @@ Figure~\ref{fig:summary} shows all three metrics side by side for both enzymes.
 
 \subsection{Enzyme-Class-Dependent Response}
 
-The central finding is that the response to motif shell conditioning is enzyme-class-dependent. For the Zn$^{2+}$-coordinated His triad in carbonic anhydrase, 8~\AA{} shell conditioning achieves 77\% reduction in catalytic RMSD and 90\% reduction in structural variance. For the Ser-His-Asp hydrogen-bond relay in elastase, the same conditioning reduces variance substantially but barely improves mean RMSD — the designs become consistently wrong rather than variably wrong.
+The central finding is that the response to motif shell conditioning is enzyme-class-dependent and directionally opposite between the two systems. For the Zn$^{2+}$-coordinated His triad in carbonic anhydrase, 8~\AA{} shell conditioning achieves a 50\% reduction in catalytic RMSD (5.4~\AA{} $\to$ 2.7~\AA{}) and 63\% reduction in structural variance (3.2~\AA{} $\to$ 1.2~\AA{}). For the Ser-His-Asp hydrogen-bond relay in elastase, tighter conditioning monotonically worsens catalytic RMSD from 4.6~\AA{} (motif\_only) to 9.2~\AA{} (shell8) — the lowest RMSD is achieved with the least geometric constraint.
 
 We attribute this asymmetry to the nature of the geometric constraints maintaining each active site. In carbonic anhydrase, the Zn$^{2+}$ ion enforces a rigid tetrahedral coordination geometry on the three histidines. Fixing 8~\AA{} of surrounding context is sufficient to mechanically determine the positions of all three histidine N$\varepsilon$2 atoms, because the metal ion acts as a local rigid anchor that makes the geometry insensitive to the broader scaffold topology. In elastase, the Ser-His-Asp relay lacks any such anchor. The geometry is maintained by a hydrogen-bond network whose determinants — the loop carrying His57 and the strand carrying Asp102 — are positioned by backbone interactions extending 12--15~\AA{} or more from the triad center. An 8~\AA{} shell captures many but not all of these structural determinants.
 
@@ -213,7 +213,7 @@ The dissociation between variance and accuracy for elastase shell8 is particular
 
 \subsection{Practical Implications}
 
-This result has a direct practical implication for diffusion-based enzyme design: the appropriate conditioning radius is an enzyme-class-specific design choice, not a universal hyperparameter. For metal-coordinated active sites, shell conditioning at 8~\AA{} appears both sufficient and strongly beneficial. For hydrogen-bond relay triads, the current results suggest that 8~\AA{} shell conditioning is insufficient to achieve geometric accuracy, and that additional approaches may be required.
+This result has a direct practical implication for diffusion-based enzyme design: the appropriate conditioning radius is an enzyme-class-specific design choice, not a universal hyperparameter. For metal-coordinated active sites, shell conditioning at 8~\AA{} appears both sufficient and strongly beneficial. For hydrogen-bond relay triads, the current results suggest that shell conditioning is counterproductive at all tested radii — increasing constraint worsens geometric accuracy rather than improving it. This may mean that motif-only conditioning, with maximum scaffold freedom, is the better strategy for Ser-His-Asp triads, or that a fundamentally different approach (e.g., fragment-based backbone seeds, explicit backbone torsion constraints) is required.
 
 From a design campaign perspective, Figure~\ref{fig:scatter} illustrates another practical advantage of tight conditioning: it concentrates predictions into a high-quality cluster rather than producing a mixture of accurate and inaccurate designs. For 1CA2 shell8, a designer can be confident that nearly any design from the pool is geometrically accurate. For 1PPF under any conditioning regime, designs must be individually evaluated to identify the rare accurate predictions.
 

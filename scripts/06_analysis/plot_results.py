@@ -270,7 +270,7 @@ def plot_summary_panel(summary: pd.DataFrame):
     metrics_to_plot = [
         ("mean_cat_rmsd",            "std_cat_rmsd",           "Catalytic RMSD (Å)",          True),
         ("mean_plddt_cat",           "std_plddt_cat",          "Local pLDDT (catalytic)",      False),
-        ("mean_structural_variance", None,                     "Structural Variance (Å RMSD)", True),
+        ("mean_structural_variance", "std_structural_variance", "Structural Variance (Å RMSD)", True),
     ]
 
     fig, axes = plt.subplots(3, 2, figsize=(10, 12))

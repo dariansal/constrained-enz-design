@@ -339,14 +339,17 @@ def process_experiment(
     # ColabFold names: {seq_id}_unrelaxed_rank_{rank}_alphafold2_ptm_model_{m}.pdb
     pdb_files = sorted(cf_out.glob("*_unrelaxed_rank_*_alphafold2_ptm_model_*.pdb"))
     if not pdb_files:
-        # Also check for relaxed
         pdb_files = sorted(cf_out.glob("*_relaxed_rank_*_alphafold2_ptm_model_*.pdb"))
 
     if not pdb_files:
         log.warning(f"  No prediction PDB files found in {cf_out}")
         return []
 
-    log.info(f"  {exp_name}: {len(pdb_files)} prediction PDBs found")
+    # Only use sequences from the fixed ProteinMPNN runs (design_N_sM naming).
+    # Old buggy runs produced design_N_design_N and design_N_T_0.1 files.
+    pdb_files = [p for p in pdb_files if re.search(r'design_\d+_s\d+_', p.name)]
+
+    log.info(f"  {exp_name}: {len(pdb_files)} prediction PDBs found (fixed runs only)")
 
     rows = []
     for pdb_path in pdb_files:
@@ -472,7 +475,10 @@ def main():
     var_summary = (
         var_df
         .groupby("experiment")
-        .agg(mean_structural_variance=("structural_variance", "mean"))
+        .agg(
+            mean_structural_variance=("structural_variance", "mean"),
+            std_structural_variance=("structural_variance", "std"),
+        )
         .reset_index()
     )
     summary = summary.merge(var_summary, on="experiment", how="left")
