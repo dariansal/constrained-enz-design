@@ -43,7 +43,7 @@ matplotlib.rcParams.update({
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
-PROJECT = Path("/hpc/group/naderilab/darian/Enz")
+PROJECT = Path("/hpc/group/naderilab/darian/CS590/Enz")
 ANA_DIR = PROJECT / "results" / "analysis"
 FIG_DIR = ANA_DIR / "figures"
 FIG_DIR.mkdir(parents=True, exist_ok=True)
@@ -62,7 +62,7 @@ REGIME_LABELS = {
 REGIME_ORDER = ["motif_only", "shell5", "shell8"]
 
 ENZYME_LABELS = {
-    "1ppf": "Subtilisin BPN'\n(Ser-His-Asp triad)",
+    "1ppf": "Elastase (1PPF)\n(Ser-His-Asp triad)",
     "1ca2": "Carbonic Anhydrase II\n(Zn²⁺-binding His triad)",
 }
 
